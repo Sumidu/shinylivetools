@@ -8,7 +8,7 @@ on:
 name: deploy-r-shinylive-app
 
 jobs:
-    deply-allapps:
+    deploy-allapps:
       runs-on: ubuntu-latest
       # Only restrict concurrency for non-PR jobs
       concurrency:

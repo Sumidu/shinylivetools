@@ -1,6 +1,10 @@
 library(shiny)
 library(bslib)
-library(tidyverse)
+library(tibble)
+library(purrr)
+library(stringr)
+library(tidyr)
+library(dplyr)
 
 ui <- page_sidebar(
   title = "Regular Expression Tester",
