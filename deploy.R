@@ -5,14 +5,15 @@ applist <- dir("apps")
 
 sources <- paste0("apps/", applist)
 targets <- paste0("_site/",applist)
+target <- "_site"
 
 for (app in 1:length(applist)) {
-  print(app)
-  shinylive::export(sources[app], targets[app])
+  message(paste0("Deploying ",applist[app], "..."))
+  shinylive::export(sources[app], target, subdir = applist[app])
 }
 
 #shinylive::export("apps/", "_site")
 rmarkdown::render("index.Rmd",output_dir = "_site")
 
 # test
-#httup::serve_site("_site")
+#httpuv::runStaticServer("_site/")
