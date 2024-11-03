@@ -1,8 +1,6 @@
 ---
-title: Apps
-author: André
+title: Apps Small Apps served using ShinyLive and webR
 output: html_document
-
 ---
 
 
@@ -11,7 +9,7 @@ output: html_document
 applist <- dir("apps")
 for (app in 1:length(applist)) {
 
-  res <- paste0("<a href='", applist[app], "'>", applist[app], "</a>")
+  res <- paste0("<a href='", applist[app], "'><h3>", applist[app], "</h3></a>")
   cat(res)
 }
 ```

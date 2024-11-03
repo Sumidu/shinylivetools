@@ -1,115 +1,140 @@
 library(shiny)
-library(bslib)
-library(tibble)
-library(purrr)
-library(stringr)
-library(tidyr)
-library(dplyr)
+library(shinydashboard)
+library(tidyverse)
 
-ui <- page_sidebar(
-  title = "Regular Expression Tester",
-  sidebar = sidebar(
-    # File upload
-    fileInput("file", "Upload CSV file", 
-              accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
-    
-    # Column selection (shown only after file is uploaded)
-    uiOutput("column_select"),
-    
-    # Regex input
-    textInput("regex", "Enter regular expression:", value = "\\w+"),
-    
-    # Regex options
-    checkboxInput("ignore_case", "Ignore case", value = TRUE),
-    
-    # Regex help card
-    card(
-      card_header("Regex Quick Reference"),
-      card_body(
-        tags$table(
-          class = "table table-sm table-striped",
-          tags$thead(
-            tags$tr(
-              tags$th("Pattern"),
-              tags$th("Description")
+ui <- dashboardPage(
+  dashboardHeader(title = "Regular Expression Tester"),
+  
+  dashboardSidebar(
+    sidebarMenu(
+      menuItem("Regex Tester", tabName = "regex", icon = icon("code"))
+    )
+  ),
+  
+  dashboardBody(
+    tabItems(
+      tabItem(
+        tabName = "regex",
+        fluidRow(
+          # Left column with inputs
+          column(
+            width = 4,
+            box(
+              width = NULL,
+              title = "Input Controls",
+              status = "primary",
+              solidHeader = TRUE,
+              # File upload
+              fileInput("file", "Upload CSV file", 
+                        accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
+              
+              # Column selection
+              uiOutput("column_select"),
+              
+              # Regex input
+              textInput("regex", "Enter regular expression:", value = "\\w+"),
+              
+              # Regex options
+              checkboxInput("ignore_case", "Ignore case", value = TRUE)
+            ),
+            
+            # Regex help box
+            box(
+              width = NULL,
+              title = "Regex Quick Reference",
+              status = "info",
+              solidHeader = TRUE,
+              tags$table(
+                class = "table table-sm table-striped",
+                tags$thead(
+                  tags$tr(
+                    tags$th("Pattern"),
+                    tags$th("Description")
+                  )
+                ),
+                tags$tbody(
+                  tags$tr(
+                    tags$td(tags$code(".")),
+                    tags$td("Any single character")
+                  ),
+                  tags$tr(
+                    tags$td(tags$code("\\w")),
+                    tags$td("Word character [A-Za-z0-9_]")
+                  ),
+                  tags$tr(
+                    tags$td(tags$code("\\d")),
+                    tags$td("Digit [0-9]")
+                  ),
+                  tags$tr(
+                    tags$td(tags$code("\\s")),
+                    tags$td("Whitespace character")
+                  ),
+                  tags$tr(
+                    tags$td(tags$code("[abc]")),
+                    tags$td("Any of a, b, or c")
+                  ),
+                  tags$tr(
+                    tags$td(tags$code("[^abc]")),
+                    tags$td("Any character except a, b, or c")
+                  ),
+                  tags$tr(
+                    tags$td(tags$code("a|b")),
+                    tags$td("Match a or b")
+                  ),
+                  tags$tr(
+                    tags$td(tags$code("^")),
+                    tags$td("Start of string")
+                  ),
+                  tags$tr(
+                    tags$td(tags$code("$")),
+                    tags$td("End of string")
+                  ),
+                  tags$tr(
+                    tags$td(tags$code("\\b")),
+                    tags$td("Word boundary")
+                  ),
+                  tags$tr(
+                    tags$td(tags$code("*")),
+                    tags$td("0 or more")
+                  ),
+                  tags$tr(
+                    tags$td(tags$code("+")),
+                    tags$td("1 or more")
+                  ),
+                  tags$tr(
+                    tags$td(tags$code("?")),
+                    tags$td("0 or 1")
+                  ),
+                  tags$tr(
+                    tags$td(tags$code("{n}")),
+                    tags$td("Exactly n times")
+                  ),
+                  tags$tr(
+                    tags$td(tags$code("{n,}")),
+                    tags$td("n or more times")
+                  ),
+                  tags$tr(
+                    tags$td(tags$code("(...)")),
+                    tags$td("Capturing group")
+                  )
+                )
+              )
             )
           ),
-          tags$tbody(
-            tags$tr(
-              tags$td(tags$code(".")),
-              tags$td("Any single character")
-            ),
-            tags$tr(
-              tags$td(tags$code("\\w")),
-              tags$td("Word character [A-Za-z0-9_]")
-            ),
-            tags$tr(
-              tags$td(tags$code("\\d")),
-              tags$td("Digit [0-9]")
-            ),
-            tags$tr(
-              tags$td(tags$code("\\s")),
-              tags$td("Whitespace character")
-            ),
-            tags$tr(
-              tags$td(tags$code("[abc]")),
-              tags$td("Any of a, b, or c")
-            ),
-            tags$tr(
-              tags$td(tags$code("[^abc]")),
-              tags$td("Any character except a, b, or c")
-            ),
-            tags$tr(
-              tags$td(tags$code("a|b")),
-              tags$td("Match a or b")
-            ),
-            tags$tr(
-              tags$td(tags$code("^")),
-              tags$td("Start of string")
-            ),
-            tags$tr(
-              tags$td(tags$code("$")),
-              tags$td("End of string")
-            ),
-            tags$tr(
-              tags$td(tags$code("\\b")),
-              tags$td("Word boundary")
-            ),
-            tags$tr(
-              tags$td(tags$code("*")),
-              tags$td("0 or more")
-            ),
-            tags$tr(
-              tags$td(tags$code("+")),
-              tags$td("1 or more")
-            ),
-            tags$tr(
-              tags$td(tags$code("?")),
-              tags$td("0 or 1")
-            ),
-            tags$tr(
-              tags$td(tags$code("{n}")),
-              tags$td("Exactly n times")
-            ),
-            tags$tr(
-              tags$td(tags$code("{n,}")),
-              tags$td("n or more times")
-            ),
-            tags$tr(
-              tags$td(tags$code("(...)")),
-              tags$td("Capturing group")
+          
+          # Right column with results
+          column(
+            width = 8,
+            box(
+              width = NULL,
+              title = "Matching Results",
+              status = "primary",
+              solidHeader = TRUE,
+              tableOutput("matches")
             )
           )
         )
       )
-    )
-  ),
-  
-  # Main panel with results
-  card(
-    card_header("Matching Results"),
-    card_body(
-      tableOutput("matches")
     )
   )
 )

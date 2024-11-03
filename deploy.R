@@ -16,4 +16,4 @@ for (app in 1:length(applist)) {
 rmarkdown::render("index.Rmd",output_dir = "_site")
 
 # test
-#httpuv::runStaticServer("_site/")
+# httpuv::runStaticServer("_site/regextester/")
