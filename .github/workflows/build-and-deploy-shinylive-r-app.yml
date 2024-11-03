@@ -30,7 +30,7 @@ jobs:
           
         # Use RENV to get Dependencies  
         - name: "User renv"
-        - uses: r-lib/actions/setup-renv@v2
+          uses: r-lib/actions/setup-renv@v2
   
         # Install and pin the shinylive R package dependency
         - name: "Setup R dependency for Shinylive App export"
