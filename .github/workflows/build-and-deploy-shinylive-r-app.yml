@@ -5,10 +5,10 @@ on:
         types: [published]
     workflow_dispatch: {}
    
-name: demo-r-shinylive-app
+name: deploy-r-shinylive-app
 
 jobs:
-    demo-website:
+    deply-allapps:
       runs-on: ubuntu-latest
       # Only restrict concurrency for non-PR jobs
       concurrency:
