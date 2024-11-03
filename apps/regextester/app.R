@@ -1,18 +1,48 @@
 library(shiny)
 library(shinydashboard)
 library(tidyverse)
+library(DT)
+
+# Read the regex help data
+# make sure that an empty dataframe is returned if file is not found
+regex_help <- tibble()
+tryCatch({
+  regex_help <- read.csv("regexhelp.csv")
+}, error = function(e) {
+  regex_help <- data.frame()
+})
 
 ui <- dashboardPage(
   dashboardHeader(title = "Regular Expression Tester"),
   
   dashboardSidebar(
     sidebarMenu(
+      menuItem("Data Upload", tabName = "upload", icon = icon("upload")),
       menuItem("Regex Tester", tabName = "regex", icon = icon("code"))
     )
   ),
   
   dashboardBody(
     tabItems(
+      # Data Upload Tab
+      tabItem(
+        tabName = "upload",
+        fluidRow(
+          box(
+            width = 12,
+            title = "Upload Data",
+            status = "primary",
+            solidHeader = TRUE,
+            # File upload
+            fileInput("file", "Upload CSV file", 
+                      accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
+            # Preview of uploaded data
+            DTOutput("data_preview")
+          )
+        )
+      ),
+      
+      # Regex Tester Tab
       tabItem(
         tabName = "regex",
         fluidRow(
@@ -24,10 +54,6 @@ ui <- dashboardPage(
               title = "Input Controls",
               status = "primary",
               solidHeader = TRUE,
-              # File upload
-              fileInput("file", "Upload CSV file", 
-                        accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
-              
               # Column selection
               uiOutput("column_select"),
               
@@ -44,81 +70,7 @@ ui <- dashboardPage(
               title = "Regex Quick Reference",
               status = "info",
               solidHeader = TRUE,
-              tags$table(
-                class = "table table-sm table-striped",
-                tags$thead(
-                  tags$tr(
-                    tags$th("Pattern"),
-                    tags$th("Description")
-                  )
-                ),
-                tags$tbody(
-                  tags$tr(
-                    tags$td(tags$code(".")),
-                    tags$td("Any single character")
-                  ),
-                  tags$tr(
-                    tags$td(tags$code("\\w")),
-                    tags$td("Word character [A-Za-z0-9_]")
-                  ),
-                  tags$tr(
-                    tags$td(tags$code("\\d")),
-                    tags$td("Digit [0-9]")
-                  ),
-                  tags$tr(
-                    tags$td(tags$code("\\s")),
-                    tags$td("Whitespace character")
-                  ),
-                  tags$tr(
-                    tags$td(tags$code("[abc]")),
-                    tags$td("Any of a, b, or c")
-                  ),
-                  tags$tr(
-                    tags$td(tags$code("[^abc]")),
-                    tags$td("Any character except a, b, or c")
-                  ),
-                  tags$tr(
-                    tags$td(tags$code("a|b")),
-                    tags$td("Match a or b")
-                  ),
-                  tags$tr(
-                    tags$td(tags$code("^")),
-                    tags$td("Start of string")
-                  ),
-                  tags$tr(
-                    tags$td(tags$code("$")),
-                    tags$td("End of string")
-                  ),
-                  tags$tr(
-                    tags$td(tags$code("\\b")),
-                    tags$td("Word boundary")
-                  ),
-                  tags$tr(
-                    tags$td(tags$code("*")),
-                    tags$td("0 or more")
-                  ),
-                  tags$tr(
-                    tags$td(tags$code("+")),
-                    tags$td("1 or more")
-                  ),
-                  tags$tr(
-                    tags$td(tags$code("?")),
-                    tags$td("0 or 1")
-                  ),
-                  tags$tr(
-                    tags$td(tags$code("{n}")),
-                    tags$td("Exactly n times")
-                  ),
-                  tags$tr(
-                    tags$td(tags$code("{n,}")),
-                    tags$td("n or more times")
-                  ),
-                  tags$tr(
-                    tags$td(tags$code("(...)")),
-                    tags$td("Capturing group")
-                  )
-                )
-              )
+              tableOutput("regex_help")
             )
           ),
           
@@ -130,7 +82,7 @@ ui <- dashboardPage(
               title = "Matching Results",
               status = "primary",
               solidHeader = TRUE,
-              tableOutput("matches")
+              DTOutput("matches")
             )
           )
         )
@@ -140,10 +92,26 @@ ui <- dashboardPage(
 )
 
 server <- function(input, output, session) {
+  # Display regex help
+  output$regex_help <- renderTable({
+    regex_help
+  }, sanitize.text.function = function(x) x)  # This allows HTML tags to render
+  
   # Reactive value for the uploaded data
   data <- reactive({
     req(input$file)
     read.csv(input$file$datapath)
+  })
+  
+  # Preview of uploaded data
+  output$data_preview <- renderDT({
+    req(data())
+    datatable(head(data(), 5),
+              options = list(
+                pageLength = 5,
+                scrollX = TRUE,
+                dom = 'ft'  # Only show filter and table
+              ))
   })
   
   # Dynamic column selector
@@ -179,9 +147,14 @@ server <- function(input, output, session) {
   })
   
   # Display matches
-  output$matches <- renderTable({
+  output$matches <- renderDT({
     req(matches())
-    matches()
+    datatable(matches(),
+              options = list(
+                pageLength = 10,
+                scrollX = TRUE,
+                dom = 'ftip'  # Show filter, table, info, and pagination
+              ))
   })
 }
 

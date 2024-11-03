@@ -17,3 +17,9 @@ rmarkdown::render("index.Rmd",output_dir = "_site")
 
 # test
 # httpuv::runStaticServer("_site/regextester/")
+
+# print folder size of _site without system call
+files<-list.files("_site", full.names = TRUE, recursive = TRUE)
+vect_size <- sapply(files, file.size)
+size_files <- sum(vect_size)
+message(paste("Output folder size:",utils:::format.object_size(size_files, "auto")))
