@@ -12,3 +12,7 @@ for (app in 1:length(applist)) {
 }
 
 #shinylive::export("apps/", "_site")
+rmarkdown::render("index.Rmd",output_dir = "_site")
+
+# test
+#httup::serve_site("_site")

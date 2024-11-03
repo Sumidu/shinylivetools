@@ -1,0 +1,18 @@
+---
+title: Apps
+author: André
+output: html_document
+
+---
+
+
+```{r echo=FALSE, results="asis" }
+# get list of apps
+applist <- dir("apps")
+for (app in 1:length(applist)) {
+
+  res <- paste0("<a href='", applist[app], "'>", applist[app], "</a>")
+  cat(res)
+}
+```
+
