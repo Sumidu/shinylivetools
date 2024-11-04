@@ -26,11 +26,11 @@ Was ist die Hauptstadt von Frankreich?
       hr(),
       
       h4("Extrahierte Elemente:"),
-      textInput("extracted_question", "Frage:", ""),
-      textInput("extracted_answer1", "Antwort 1:", ""),
-      textInput("extracted_answer2", "Antwort 2:", ""),
-      textInput("extracted_answer3", "Antwort 3:", ""),
-      textInput("extracted_answer4", "Antwort 4:", ""),
+      textAreaInput("extracted_question", "Frage:", "", rows = 3),
+      textAreaInput("extracted_answer1", "Antwort 1:", "", rows = 2),
+      textAreaInput("extracted_answer2", "Antwort 2:", "", rows = 2),
+      textAreaInput("extracted_answer3", "Antwort 3:", "", rows = 2),
+      textAreaInput("extracted_answer4", "Antwort 4:", "", rows = 2),
       
       hr(),
       
@@ -39,7 +39,7 @@ Was ist die Hauptstadt von Frankreich?
         tags$li("Text muss mit eine Frage beginnen, die mit einem Fragezeichen endet"),
         tags$li("Es müssen genau 4 Antworten existieren"),
         tags$li("Die Antworten müssen mit 1. 2. 3. 4. nummeriert sein"),
-        tags$li("Formatierter Text führt zu Fehlern"),
+        tags$li("Formatierter Text führt zu Fehlern")
       )
     )
   )
@@ -121,18 +121,18 @@ server <- function(input, output, session) {
     })
     
     if (result$valid) {
-      updateTextInput(session, "extracted_question", value = result$components$question)
-      updateTextInput(session, "extracted_answer1", value = result$components$answers[1])
-      updateTextInput(session, "extracted_answer2", value = result$components$answers[2])
-      updateTextInput(session, "extracted_answer3", value = result$components$answers[3])
-      updateTextInput(session, "extracted_answer4", value = result$components$answers[4])
+      updateTextAreaInput(session, "extracted_question", value = result$components$question)
+      updateTextAreaInput(session, "extracted_answer1", value = result$components$answers[1])
+      updateTextAreaInput(session, "extracted_answer2", value = result$components$answers[2])
+      updateTextAreaInput(session, "extracted_answer3", value = result$components$answers[3])
+      updateTextAreaInput(session, "extracted_answer4", value = result$components$answers[4])
     } else {
       # Clear the fields if validation fails
-      updateTextInput(session, "extracted_question", value = "")
-      updateTextInput(session, "extracted_answer1", value = "")
-      updateTextInput(session, "extracted_answer2", value = "")
-      updateTextInput(session, "extracted_answer3", value = "")
-      updateTextInput(session, "extracted_answer4", value = "")
+      updateTextAreaInput(session, "extracted_question", value = "")
+      updateTextAreaInput(session, "extracted_answer1", value = "")
+      updateTextAreaInput(session, "extracted_answer2", value = "")
+      updateTextAreaInput(session, "extracted_answer3", value = "")
+      updateTextAreaInput(session, "extracted_answer4", value = "")
     }
   })
 }
